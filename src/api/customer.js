@@ -70,4 +70,9 @@ export function record() {
     method: 'post'
   })
 }
-
+export function department() {
+  return request({
+    url: '/department',
+    method: 'post'
+  })
+}

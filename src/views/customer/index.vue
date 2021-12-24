@@ -14,24 +14,20 @@
             </el-button>
           </el-form-item>
           <el-form-item :label="$t('customer.hospital')" prop="hospital">
-            <el-select v-model="formInline.hospital" clearable filterable  placeholder="请选择">
-              <el-option
-                v-for="item in hospitalList"
-                :key="item.hospital"
-                :label="item.hospital"
-                :value="item.hospital">
-              </el-option>
-            </el-select>
+            <el-autocomplete
+              class="inline-input"
+              v-model="formInline.hospital"
+              :fetch-suggestions="querySearchHospital"
+              placeholder="请输入医院名称"
+            ></el-autocomplete>
           </el-form-item>
           <el-form-item :label="$t('customer.customer_name')" prop="customer_name">
-            <el-select v-model="formInline.customer_name" clearable filterable  placeholder="请选择">
-              <el-option
-                v-for="item in customerNameList"
-                :key="item.customer_name"
-                :label="item.customer_name"
-                :value="item.customer_name">
-              </el-option>
-            </el-select>
+            <el-autocomplete
+              class="inline-input"
+              v-model="formInline.customer_name"
+              :fetch-suggestions="querySearchCustomerName"
+              placeholder="请输入客户名称"
+            ></el-autocomplete>
           </el-form-item>
           <el-col>
             <el-form-item>
@@ -101,23 +97,36 @@
     >
       <el-form ref="createForm" :model="createForm" label-width="auto" @submit.native.prevent>
         <el-form-item :label="$t('customer.city')" prop="city" >
-          <el-input v-model="createForm.city" />
+          <el-autocomplete
+              class="inline-input"
+              v-model="createForm.city"
+              :fetch-suggestions="querySearchCity"
+              placeholder="请输入所在地市">
+          </el-autocomplete>
         </el-form-item>
         <el-form-item :label="$t('customer.county')" prop="county">
-          <el-input v-model="createForm.county" />
+          <el-autocomplete
+            class="inline-input"
+            v-model="createForm.county"
+            :fetch-suggestions="querySearchCounty"
+            placeholder="请输入所在区县">
+          </el-autocomplete>
         </el-form-item>
         <el-form-item :label="$t('customer.hospital')" prop="hospital">
-          <el-select v-model="formInline.hospital" clearable filterable  placeholder="请选择">
-            <el-option
-              v-for="item in hospitalList"
-              :key="item.hospital"
-              :label="item.hospital"
-              :value="item.hospital">
-            </el-option>
-          </el-select>
+          <el-autocomplete
+            class="inline-input"
+            v-model="createForm.hospital"
+            :fetch-suggestions="querySearchHospital"
+            placeholder="请输入医院名称">
+          </el-autocomplete>
         </el-form-item>
         <el-form-item :label="$t('customer.department')" prop="department">
-          <el-input v-model="createForm.department" />
+          <el-autocomplete
+            class="inline-input"
+            v-model="createForm.department"
+            :fetch-suggestions="querySearchDepartment"
+            placeholder="请输入科室">
+          </el-autocomplete>
         </el-form-item>
         <el-form-item :label="$t('customer.customer_name')" prop="customer_name">
           <el-select v-model="formInline.customer_name" clearable filterable  placeholder="请选择">
@@ -184,7 +193,7 @@
 
 <script>
 import { rTime } from '@/utils'
-import { customers, hospitals, customerNames, city, county, phone, produce, tracker, bill, channelBusiness, record } from '@/api/customer'
+import { customers, hospitals, customerNames, city, county, phone, produce, tracker, bill, channelBusiness, record, department } from '@/api/customer'
 
 export default {
   name: 'customer.customers',
@@ -231,6 +240,7 @@ export default {
       billList: [],
       channelBusinessList: [],
       recordList: [],
+      departmentList: [],
       tableData: [],
       newTableData: [],
       spanArray: [],
@@ -275,6 +285,15 @@ export default {
     this.getCustomers()
     this.getHospitalList()
     this.getCustomerNameList()
+    this.getDepartmentList()
+    this.getBillList()
+    this.getCityList()
+    this.getCountyList()
+    this.getPhoneList()
+    this.getRecordList()
+    this.getChannelBusinessList()
+    this.getProduceList()
+    this.getTrackerList()
   },
   methods: {
     onUpdate(formName) {
@@ -463,7 +482,7 @@ export default {
       console.log('success', value)
       this.$message.success('已复制')
     },
-    getCityLis() {
+    getCityList() {
       city().then(response => {
         const { data } = response
         this.loading = false
@@ -518,6 +537,117 @@ export default {
         this.loading = false
         this.recordList = data
       })
+    },
+    getDepartmentList() {
+      department().then(response => {
+        const { data } = response
+        this.loading = false
+        this.departmentList = data
+      })
+    },
+    querySearchHospital(queryString, cb) {
+      let restaurants = []
+      for (let i in this.hospitalList) {
+        restaurants.push({ 'value': this.hospitalList[i].hospital })
+      }
+      var results = queryString ? restaurants.filter(this.createFilter(queryString)) : restaurants
+      // 调用 callback 返回建议列表的数据
+      cb(results)
+    },
+    createFilter(queryString) {
+      return (restaurant) => {
+        return (restaurant.value.toString().indexOf(queryString.toString()) > -1)
+      }
+    },
+    querySearchCustomerName(queryString, cb) {
+      let restaurants = []
+      for (let i in this.customerNameList) {
+        restaurants.push({ 'value': this.customerNameList[i].customer_name})
+      }
+      var results = queryString ? restaurants.filter(this.createFilter(queryString)) : restaurants
+      // 调用 callback 返回建议列表的数据
+      cb(results)
+    },
+    querySearchCity(queryString, cb) {
+      let restaurants = []
+      for (let i in this.cityList) {
+        restaurants.push({ 'value': this.cityList[i].city})
+      }
+      var results = queryString ? restaurants.filter(this.createFilter(queryString)) : restaurants
+      // 调用 callback 返回建议列表的数据
+      cb(results)
+    },
+    querySearchCounty(queryString, cb) {
+      let restaurants = []
+      for (let i in this.countyList) {
+        restaurants.push({ 'value': this.countyList[i].county})
+      }
+      var results = queryString ? restaurants.filter(this.createFilter(queryString)) : restaurants
+      // 调用 callback 返回建议列表的数据
+      cb(results)
+    },
+    querySearchPhone(queryString, cb) {
+      let restaurants = []
+      for (let i in this.phoneList) {
+        restaurants.push({ 'value': this.phoneList[i].phone })
+      }
+      var results = queryString ? restaurants.filter(this.createFilter(queryString)) : restaurants
+      // 调用 callback 返回建议列表的数据
+      cb(results)
+    },
+    querySearchProduce(queryString, cb) {
+      let restaurants = []
+      for (let i in this.produceList) {
+        restaurants.push({ 'value': this.produceList[i].produce })
+      }
+      var results = queryString ? restaurants.filter(this.createFilter(queryString)) : restaurants
+      // 调用 callback 返回建议列表的数据
+      cb(results)
+    },
+    querySearchTracker(queryString, cb) {
+      let restaurants = []
+      for (let i in this.trackerList) {
+        restaurants.push({ 'value': this.trackerList[i].tracker })
+      }
+      var results = queryString ? restaurants.filter(this.createFilter(queryString)) : restaurants
+      // 调用 callback 返回建议列表的数据
+      cb(results)
+    },
+    querySearchBill(queryString, cb) {
+      let restaurants = []
+      for (let i in this.billList) {
+        restaurants.push({ 'value': this.billList[i].bill })
+      }
+      var results = queryString ? restaurants.filter(this.createFilter(queryString)) : restaurants
+      // 调用 callback 返回建议列表的数据
+      cb(results)
+    },
+    querySearchChannelBusiness(queryString, cb) {
+      let restaurants = []
+      for (let i in this.channelBusinessList) {
+        restaurants.push({ 'value': this.channelBusinessList[i].channel_business })
+      }
+      var results = queryString ? restaurants.filter(this.createFilter(queryString)) : restaurants
+      // 调用 callback 返回建议列表的数据
+      cb(results)
+    },
+    querySearchRecord(queryString, cb) {
+      let restaurants = []
+      for (let i in this.recordList) {
+        restaurants.push({ 'value': this.recordList[i].record})
+      }
+      var results = queryString ? restaurants.filter(this.createFilter(queryString)) : restaurants
+      // 调用 callback 返回建议列表的数据
+      cb(results)
+    },
+    querySearchDepartment(queryString, cb) {
+      let restaurants = []
+      for (let i in this.departmentList) {
+        restaurants.push({ 'value': this.departmentList[i].department })
+      }
+      var results = queryString ? restaurants.filter(this.createFilter(queryString)) : restaurants
+      // 调用 callback 返回建议列表的数据
+      cb(results)
     }
   }
 }
