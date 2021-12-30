@@ -5,7 +5,6 @@
         <el-form ref="formInline" :inline="true" :model="formInline">
           <el-form-item>
             <el-button
-              v-permission="'user.create'"
               type="primary"
               icon="el-icon-circle-plus-outline"
               @click="createVisible = true"
@@ -13,27 +12,13 @@
               {{ $t('common.create') }}
             </el-button>
           </el-form-item>
-          <el-form-item :label="$t('customer.hospital')" prop="hospital">
-            <el-autocomplete
-              class="inline-input"
-              v-model="formInline.hospital"
-              :fetch-suggestions="querySearchHospital"
-              placeholder="请输入医院名称"
-            ></el-autocomplete>
-          </el-form-item>
-          <el-form-item :label="$t('customer.customer_name')" prop="customer_name">
-            <el-autocomplete
-              class="inline-input"
-              v-model="formInline.customer_name"
-              :fetch-suggestions="querySearchCustomerName"
-              placeholder="请输入客户名称"
-            ></el-autocomplete>
+          <el-form-item  prop="searchData">
+            <el-input v-model="formInline.searchData" :placeholder="$t('customer.search')" />
           </el-form-item>
           <el-col>
             <el-form-item>
               <el-button type="primary" @click="onSubmit">{{ $t('common.search') }}</el-button>
               <el-button @click="resetForm('formInline')">{{ $t('common.reset') }}</el-button>
-
             </el-form-item>
           </el-col>
         </el-form>
@@ -42,39 +27,208 @@
         <el-col :span="24">
           <el-table
             highlight-current-row
-            :data="newTableData"
+            :data="tableData"
             style="width: 100%"
             class="common-table2"
-            :span-method="arraySpanMethod"
+            @cell-dblclick="cellEdit"
           >
-            <el-table-column class="el-icon-document-copy" prop="city" :label="$t('customer.city')" />
-            <el-table-column prop="county" :label="$t('customer.county')" />
-            <el-table-column prop="hospital" :label="$t('customer.hospital')" >
+            <el-table-column
+              prop="city"
+              :label="$t('customer.city')"
+              style="width: 5%">
               <template slot-scope="scope">
-                <el-button type="primary" plain  v-clipboard="scope.row.hospital" v-clipboard:success="clipboardSuccessHandler">{{ scope.row.hospital }}</el-button>
+                <el-input
+                  type="textarea"
+                  autosize
+                  v-if="scope.row.city.edit"
+                  ref="city"
+                  v-model="scope.row.city.value"
+                  style="width: 100%;height: 100%;border: none"
+                  @blur="changeData(scope.row, scope.column)">
+                </el-input>
+                <span v-else-if="scope.row.city.value==''"  class="set"><i class="el-icon-edit edit"></i></span>
+                <span v-else v-html="preText(scope.row.city.value)"></span>
               </template>
             </el-table-column>
-            <el-table-column prop="department" :label="$t('customer.department')" />
-            <el-table-column prop="customer_name" :label="$t('customer.customer_name')">
+            <el-table-column
+              prop="county"
+              :label="$t('customer.county')"
+              style="width: 5%">
               <template slot-scope="scope">
-                <el-button type="primary" plain  v-clipboard="scope.row.customer_name" v-clipboard:success="clipboardSuccessHandler">{{ scope.row.customer_name }}</el-button>
-                <el-button type="primary" >+</el-button>
+                <el-input
+                  type="textarea"
+                  autosize
+                  v-if="scope.row.county.edit"
+                  ref="county"
+                  v-model="scope.row.county.value"
+                  style="width: 100%;height: 100%;border: none"
+                  @blur="changeData(scope.row, scope.column)">
+                </el-input>
+                <span v-else-if="scope.row.county.value==''"  class="set"><i class="el-icon-edit edit"></i></span>
+                <span v-else v-html="preText(scope.row.county.value)"></span>
               </template>
             </el-table-column>
-            <el-table-column prop="childPhone" :label="$t('customer.phone')">
+            <el-table-column
+              prop="hospital"
+              :label="$t('customer.hospital')"
+              style="width: 8%">
               <template slot-scope="scope">
-                <el-button type="primary" plain  v-clipboard="scope.row.childPhone" v-clipboard:success="clipboardSuccessHandler">{{ scope.row.childPhone }}</el-button>
+                <el-input
+                  type="textarea"
+                  autosize
+                  v-if="scope.row.hospital.edit"
+                  ref="hospital"
+                  v-model="scope.row.hospital.value"
+                  style="width: 100%;height: 100%;border: none"
+                  @blur="changeData(scope.row, scope.column)">
+                </el-input>
+                <span v-else-if="scope.row.hospital.value==''"  class="set"><i class="el-icon-edit edit"></i></span>
+                <span v-else v-html="preText(scope.row.hospital.value)"></span>
               </template>
             </el-table-column>
-            <el-table-column prop="childProduce" :label="$t('customer.produce')" />
-            <el-table-column prop="childBasicInformation" :label="$t('customer.basic_information')" />
-            <el-table-column prop="childTracker" :label="$t('customer.tracker')" />
-            <el-table-column prop="childClinicalRelationship" :label="$t('customer.clinical_relationship')" />
-            <el-table-column prop="childBill" :label="$t('customer.bill')" />
-            <el-table-column prop="childChannelBusiness" :label="$t('customer.channel_business')" />
-            <el-table-column prop="childRecord" :label="$t('customer.record')" />
-            <el-table-column prop="childRemark" :label="$t('customer.remark')" />
-            <el-table-column prop="childUpdateAt" :label="$t('common.updatedAt')" width="100px"/>
+            <el-table-column
+              prop="department"
+              :label="$t('customer.department')"
+              style="width: 5%">
+              <template slot-scope="scope">
+                <el-input
+                  type="textarea"
+                  autosize
+                  v-if="scope.row.department.edit"
+                  ref="department"
+                  v-model="scope.row.department.value"
+                  style="width: 100%;height: 100%;border: none"
+                  @blur="changeData(scope.row, scope.column)">
+                </el-input>
+                <span v-else-if="scope.row.department.value==''"  class="set"><i class="el-icon-edit edit"></i></span>
+                <span v-else v-html="preText(scope.row.department.value)"></span>
+              </template>
+            </el-table-column>
+            <el-table-column
+              prop="customer_name"
+              :label="$t('customer.customer_name')"
+              min-width="60px">
+              <template slot-scope="scope">
+                <el-input
+                  type="textarea"
+                  autosize
+                  v-if="scope.row.customer_name.edit"
+                  ref="customer_name"
+                  v-model="scope.row.customer_name.value"
+                  style="width: 100%;height: 100%;border: none"
+                  @blur="changeData(scope.row, scope.column)">
+                </el-input>
+                <span v-else-if="scope.row.customer_name.value==''"  class="set"><i class="el-icon-edit edit"></i></span>
+                <span v-else v-html="preText(scope.row.customer_name.value)"></span>
+              </template>
+            </el-table-column>
+            <el-table-column
+              prop="phone"
+              :label="$t('customer.phone')"
+              style="width: 10%">
+              <template slot-scope="scope">
+                <el-input
+                  type="textarea"
+                  autosize
+                  v-if="scope.row.phone.edit"
+                  ref="phone"
+                  v-model="scope.row.phone.value"
+                  style="width: 100%;height: 100%;border: none"
+                  @blur="changeData(scope.row, scope.column)">
+                </el-input>
+                <span v-else-if="scope.row.phone.value==''"  class="set"><i class="el-icon-edit edit"></i></span>
+                <span v-else v-html="preText(scope.row.phone.value)"></span>
+              </template>
+            </el-table-column>
+            <el-table-column
+              prop="information"
+              :label="$t('customer.information')"
+              min-width="150px">
+              <template slot-scope="scope">
+                <el-input
+                  type="textarea"
+                  autosize
+                  v-if="scope.row.information.edit"
+                  ref="information"
+                  v-model="scope.row.information.value"
+                  style="width: 100%;height: 100%;border: none"
+                  @blur="changeData(scope.row, scope.column)">
+                </el-input>
+                <span v-else-if="scope.row.information.value==''"  class="set"><i class="el-icon-edit edit"></i></span>
+                <span v-else v-html="preText(scope.row.information.value)"></span>
+              </template>
+            </el-table-column>
+            <el-table-column
+              prop="demand"
+              :label="$t('customer.demand')"
+              min-width="150px">
+              <template slot-scope="scope">
+                <el-input
+                  type="textarea"
+                  autosize
+                  v-if="scope.row.demand.edit"
+                  ref="demand"
+                  v-model="scope.row.demand.value"
+                  style="width: 100%;height: 100%;border: none"
+                  @blur="changeData(scope.row, scope.column)">
+                </el-input>
+                <span v-else-if="scope.row.demand.value==''"  class="set"><i class="el-icon-edit edit"></i></span>
+                <span v-else v-html="preText(scope.row.demand.value)"></span>
+              </template>
+            </el-table-column>
+            <el-table-column
+              min-width="200px"
+              prop="visit"
+              :label="$t('customer.visit')">
+              <template slot-scope="scope">
+                <el-input
+                  type="textarea"
+                  autosize
+                  v-if="scope.row.visit.edit"
+                  ref="visit"
+                  v-model="scope.row.visit.value"
+                  style="width: 100%;height: 100%;border: none"
+                  @blur="changeData(scope.row, scope.column)">
+                </el-input>
+                <span v-else-if="scope.row.visit.value==''"  class="set"><i class="el-icon-edit edit"></i></span>
+                <span v-else v-html="preText(scope.row.visit.value)"></span>
+              </template>
+            </el-table-column>
+            <el-table-column
+              style="width: 10%"
+              prop="channel_business"
+              :label="$t('customer.channel_business')">
+              <template slot-scope="scope">
+                <el-input
+                  type="textarea"
+                  autosize
+                  v-if="scope.row.channel_business.edit"
+                  ref="channel_business"
+                  v-model="scope.row.channel_business.value"
+                  style="width: 100%;height: 100%;border: none"
+                  @blur="changeData(scope.row, scope.column)">
+                </el-input>
+                <span v-else-if="scope.row.channel_business.value==''"  class="set"><i class="el-icon-edit edit"></i></span>
+                <span v-else v-html="preText(scope.row.channel_business.value)"></span>
+              </template>
+            </el-table-column>
+            <el-table-column :label="$t('common.handle')" width="100px">
+              <template slot-scope="scope">
+                <el-popconfirm
+                  :title="$t('common.confirmDelete')"
+                  :confirm-button-text="$t('common.confirmButtonText')"
+                  :cancel-button-text="$t('common.cancelButtonText')"
+                  @onConfirm="handleDelete(scope.row.id.value)"
+                >
+                  <el-button
+                    slot="reference"
+                    icon="el-icon-delete"
+                    type="danger"
+                  >
+                  </el-button>
+                </el-popconfirm>
+              </template>
+            </el-table-column>
           </el-table>
         </el-col>
         <el-col :span="24" class="margin-t-10">
@@ -101,7 +255,7 @@
               class="inline-input"
               v-model="createForm.city"
               :fetch-suggestions="querySearchCity"
-              placeholder="请输入所在地市">
+              placeholder="请输入地市">
           </el-autocomplete>
         </el-form-item>
         <el-form-item :label="$t('customer.county')" prop="county">
@@ -109,7 +263,7 @@
             class="inline-input"
             v-model="createForm.county"
             :fetch-suggestions="querySearchCounty"
-            placeholder="请输入所在区县">
+            placeholder="请输入区县">
           </el-autocomplete>
         </el-form-item>
         <el-form-item :label="$t('customer.hospital')" prop="hospital">
@@ -117,7 +271,7 @@
             class="inline-input"
             v-model="createForm.hospital"
             :fetch-suggestions="querySearchHospital"
-            placeholder="请输入医院名称">
+            placeholder="请输入医疗机构">
           </el-autocomplete>
         </el-form-item>
         <el-form-item :label="$t('customer.department')" prop="department">
@@ -129,62 +283,31 @@
           </el-autocomplete>
         </el-form-item>
         <el-form-item :label="$t('customer.customer_name')" prop="customer_name">
-          <el-select v-model="formInline.customer_name" clearable filterable  placeholder="请选择">
-            <el-option
-              v-for="item in customerNameList"
-              :key="item.customer_name"
-              :label="item.customer_name"
-              :value="item.customer_name">
-            </el-option>
-          </el-select>
+          <el-autocomplete
+            class="inline-input"
+            v-model="createForm.customer_name"
+            :fetch-suggestions="querySearchCustomerName"
+            placeholder="请输入客户名称">
+          </el-autocomplete>
         </el-form-item>
-        <el-form-item :label="$t('customer.produce')" prop="produce">
-          <el-input v-model="createForm.produce" />
+        <el-form-item :label="$t('customer.phone')" prop="phone">
+          <el-input v-model="createForm.phone" placeholder="请输入手机号"/>
         </el-form-item>
-        <el-form-item :label="$t('customer.basic_information')" prop="basic_information">
-          <el-input v-model="createForm.basic_information" />
+        <el-form-item :label="$t('customer.information')" prop="综合情况">
+          <el-input v-model="createForm.information" />
         </el-form-item>
-        <el-form-item :label="$t('customer.tracker')" prop="tracker">
-          <el-input v-model="createForm.tracker" />
+        <el-form-item :label="$t('customer.demand')" prop="demand" placeholder="请输入需求意向">
+          <el-input v-model="createForm.demand" />
         </el-form-item>
-        <el-form-item :label="$t('customer.clinical_relationship')" prop="clinical_relationship">
-          <el-input v-model="createForm.clinical_relationship" />
-        </el-form-item>
-        <el-form-item :label="$t('customer.bill')" prop="bill">
-          <el-input v-model="createForm.bill" />
+        <el-form-item :label="$t('customer.visit')" prop="visit">
+          <el-input v-model="createForm.visit" placeholder="请输入拜访记录"/>
         </el-form-item>
         <el-form-item :label="$t('customer.channel_business')" prop="channel_business">
-          <el-input v-model="createForm.channel_business" />
-        </el-form-item>
-        <el-form-item :label="$t('customer.record')" prop="record">
-          <el-input v-model="createForm.record" />
-        </el-form-item>
-        <el-form-item :label="$t('customer.remark')" prop="remark">
-          <el-input v-model="createForm.remark" />
+          <el-input v-model="createForm.channel_business" placeholder="请输入渠道商"/>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" :loading="createLoading" @click="onCreate('createForm')">{{ $t('common.submit') }}</el-button>
+          <el-button type="primary" :loading="createLoading" @click="onCreateCustomer('createForm')">{{ $t('common.submit') }}</el-button>
           <el-button @click="resetCreateForm('createForm')">{{ $t('common.reset') }}</el-button>
-        </el-form-item>
-      </el-form>
-    </el-dialog>
-    <el-dialog
-      v-el-drag-dialog
-      :title="$t('common.update')"
-      :visible.sync="updateVisible"
-    >
-      <el-form ref="updateForm" :model="updateForm" label-width="auto" @submit.native.prevent>
-        <el-form-item :label="$t('user.name')" prop="name" :error="updateError.name ? updateError.name[0] : ''">
-          <el-input v-model="updateForm.name" />
-        </el-form-item>
-        <el-form-item :label="$t('user.email')" prop="email" :error="updateError.email ? updateError.email[0] : ''">
-          <el-input v-model="updateForm.email" />
-        </el-form-item>
-        <el-form-item :label="$t('user.password')" prop="password" :error="updateError.password ? updateError.password[0] : ''">
-          <el-input v-model="updateForm.password" show-password :placeholder="$t('user.emptyPasswordText')" />
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" :loading="updateLoading" @click="onUpdate('updateForm')">{{ $t('common.submit') }}</el-button>
         </el-form-item>
       </el-form>
     </el-dialog>
@@ -192,8 +315,7 @@
 </template>
 
 <script>
-import { rTime } from '@/utils'
-import { customers, hospitals, customerNames, city, county, phone, produce, tracker, bill, channelBusiness, record, department } from '@/api/customer'
+import { customers, createCustomer, deletedCustomer, updateCustomer, city, county, hospital, department, customerName } from '@/api/customer'
 
 export default {
   name: 'customer.customers',
@@ -205,44 +327,39 @@ export default {
         hospital: '',
         department: '',
         customer_name: '',
-        product: '',
-        basic_information: '',
-        tracker: '',
-        clinical_relationship: '',
-        bill: '',
-        channel_business: '',
-        record: '',
-        remark: ''
+        phone: '',
+        information: '',
+        demand: '',
+        visit: '',
+        channel_business: ''
       },
       updateForm: {
-        name: '',
-        email: '',
-        password: ''
+        city: '',
+        county: '',
+        hospital: '',
+        department: '',
+        customer_name: '',
+        phone: '',
+        information: '',
+        demand: '',
+        visit: '',
+        channel_business: ''
       },
       formInline: {
-        customer_name: '',
-        hospital: '',
-        time: ''
+        searchData: ''
       },
       total: 0,
       loading: true,
       order: 'descending',
-      sort: 'update_at',
+      sort: 'updated_at',
       offset: 0,
       limit: 10,
-      hospitalList: [],
       customerNameList: [],
       cityList: [],
       countyList: [],
-      phoneList: [],
-      produceList: [],
-      trackerList: [],
-      billList: [],
-      channelBusinessList: [],
-      recordList: [],
+      hospitalList: [],
       departmentList: [],
       tableData: [],
-      newTableData: [],
       spanArray: [],
       tableIndex: 0,
       pickerOptions: {
@@ -277,51 +394,25 @@ export default {
       createVisible: false,
       updateError: {},
       updateLoading: false,
-      updateVisible: false,
       updateId: 0
     }
   },
   mounted() {
-    this.getCustomers()
-    this.getHospitalList()
-    this.getCustomerNameList()
-    this.getDepartmentList()
-    this.getBillList()
     this.getCityList()
     this.getCountyList()
-    this.getPhoneList()
-    this.getRecordList()
-    this.getChannelBusinessList()
-    this.getProduceList()
-    this.getTrackerList()
+    this.getHospitalList()
+    this.getDepartmentList()
+
+    this.getCustomerNameList()
+  },
+  created() {
+    this.getCustomers()
   },
   methods: {
-    onUpdate(formName) {
-      this.updateError = {}
-      this.updateLoading = true
-      if (this.updateForm.password === '') {
-        delete this.updateForm.password
-      }
-      update(this.updateForm).then(response => {
-        this.$message({
-          message: response.message,
-          type: 'success'
-        })
-        this.updateVisible = false
-        this.getCustomers()
-      }).catch(reason => {
-        const { data } = reason.response
-        if (data.code === 422) {
-          this.updateError = data.data
-        }
-      }).finally(() => {
-        this.updateLoading = false
-      })
-    },
-    onCreate(formName) {
+    onCreateCustomer(formName) {
       this.createError = {}
       this.createLoading = true
-      create(this.createForm).then(response => {
+      createCustomer(this.createForm).then(response => {
         this.$message({
           message: response.message,
           type: 'success'
@@ -339,6 +430,15 @@ export default {
         this.createLoading = false
       })
     },
+    handleDelete(id) {
+      deletedCustomer(id).then(response => {
+        this.$message({
+          message: response.message,
+          type: 'success'
+        })
+        this.getCustomers()
+      })
+    },
     resetCreateForm(formName) {
       this.$refs[formName].resetFields()
     },
@@ -352,7 +452,6 @@ export default {
       this.getCustomers()
     },
     getCustomers() {
-      this.newTableData = []
       this.spanArray = []
       this.tableIndex = 0
       this.loading = true
@@ -361,14 +460,7 @@ export default {
         limit: this.limit,
         order: this.order,
         sort: this.sort,
-        customer_name: this.formInline.customer_name,
-        hospital: this.formInline.hospital
-      }
-      if (rTime(this.formInline.time[0]) !== '') {
-        requestData['start_at'] = rTime(this.formInline.time[0])
-      }
-      if (rTime(this.formInline.time[1]) !== '') {
-        requestData['end_at'] = rTime(this.formInline.time[1])
+        search_data: this.formInline.searchData
       }
       customers(requestData).then(response => {
         const { data } = response
@@ -376,42 +468,11 @@ export default {
         this.tableData = data.customers
 
         this.tableData.forEach((item, index) => {
-          for (let i = 0; i < item.child.length; i++) {
-            const current = {
-              id: item.id,
-              city: item.city,
-              county: item.county,
-              hospital: item.hospital,
-              department: item.department,
-              customer_name: item.customer_name,
-              childPhone: item.child[i].phone,
-              childProduce: item.child[i].produce,
-              childBasicInformation: item.child[i].basic_information,
-              childTracker: item.child[i].tracker,
-              childClinicalRelationship: item.child[i].clinical_relationship,
-              childBill: item.child[i].bill,
-              childChannelBusiness: item.child[i].channel_business,
-              childRecord: item.child[i].record,
-              childRemark: item.child[i].remark,
-              childUpdateAt: item.child[i].update_at
-            }
-            this.newTableData.push(current)
-          }
-        })
-        this.newTableData.forEach((item, index) => {
-          // eslint-disable-next-line eqeqeq
-          if (index == 0) {
-            // 第一项
-            this.spanArray.push(1)
-            this.tableIndex = 0
-          } else {
-            // eslint-disable-next-line eqeqeq
-            if (this.newTableData[index].id == this.newTableData[index - 1].id) {
-              this.spanArray[this.tableIndex] = this.spanArray[this.tableIndex] + 1
-              this.spanArray.push(0)
-            } else {
-              this.spanArray.push(1)
-              this.tableIndex = index
+          item.index = index + 1
+          for(let i in item) {
+            item[i] = {
+              value: item[i],
+              edit: false
             }
           }
         })
@@ -430,143 +491,10 @@ export default {
       this.offset = val
       this.getCustomers()
     },
-    rTime(row, column) {
-      return rTime(row[column.property])
-    },
-    handleDelete(id) {
-      deleted({
-        id: id
-      }).then(response => {
-        this.$message({
-          message: response.message,
-          type: 'success'
-        })
-        this.getCustomers()
-      })
-    },
-    handleEdit(row) {
-      this.updateError = {}
-      user({
-        id: row.id
-      }).then(response => {
-        const { data } = response
-        this.updateVisible = true
-        this.updateForm = data
-      })
-    },
-    arraySpanMethod({ row, column, rowIndex, columnIndex }) {
-      if (columnIndex === 0 || columnIndex === 1 || columnIndex === 2 || columnIndex === 3 || columnIndex === 4) {
-        const _row = this.spanArray[rowIndex]
-        const _col = _row > 0 ? 1 : 0
-        return {
-          rowspan: _row,
-          colspan: _col
-        }
-      }
-    },
-    getHospitalList() {
-      hospitals().then(response => {
-        const { data } = response
-        this.loading = false
-        this.hospitalList = data
-      })
-    },
-    getCustomerNameList() {
-      customerNames().then(response => {
-        const { data } = response
-        this.loading = false
-        this.customerNameList = data
-      })
-    },
-    clipboardSuccessHandler({ value, event }) {
-      console.log('success', value)
-      this.$message.success('已复制')
-    },
-    getCityList() {
-      city().then(response => {
-        const { data } = response
-        this.loading = false
-        this.cityList = data
-      })
-    },
-    getCountyList() {
-      county().then(response => {
-        const { data } = response
-        this.loading = false
-        this.countyList = data
-      })
-    },
-    getPhoneList() {
-      phone().then(response => {
-        const { data } = response
-        this.loading = false
-        this.phoneList = data
-      })
-    },
-    getProduceList() {
-      produce().then(response => {
-        const { data } = response
-        this.loading = false
-        this.produceList = data
-      })
-    },
-    getTrackerList() {
-      tracker().then(response => {
-        const { data } = response
-        this.loading = false
-        this.trackerList = data
-      })
-    },
-    getBillList() {
-      bill().then(response => {
-        const { data } = response
-        this.loading = false
-        this.billList = data
-      })
-    },
-    getChannelBusinessList() {
-      channelBusiness().then(response => {
-        const { data } = response
-        this.loading = false
-        this.channelBusinessList = data
-      })
-    },
-    getRecordList() {
-      record().then(response => {
-        const { data } = response
-        this.loading = false
-        this.recordList = data
-      })
-    },
-    getDepartmentList() {
-      department().then(response => {
-        const { data } = response
-        this.loading = false
-        this.departmentList = data
-      })
-    },
-    querySearchHospital(queryString, cb) {
-      let restaurants = []
-      for (let i in this.hospitalList) {
-        restaurants.push({ 'value': this.hospitalList[i].hospital })
-      }
-      var results = queryString ? restaurants.filter(this.createFilter(queryString)) : restaurants
-      // 调用 callback 返回建议列表的数据
-      cb(results)
-    },
     createFilter(queryString) {
       return (restaurant) => {
         return (restaurant.value.toString().indexOf(queryString.toString()) > -1)
       }
-    },
-    querySearchCustomerName(queryString, cb) {
-      let restaurants = []
-      for (let i in this.customerNameList) {
-        restaurants.push({ 'value': this.customerNameList[i].customer_name})
-      }
-      var results = queryString ? restaurants.filter(this.createFilter(queryString)) : restaurants
-      // 调用 callback 返回建议列表的数据
-      cb(results)
     },
     querySearchCity(queryString, cb) {
       let restaurants = []
@@ -586,55 +514,10 @@ export default {
       // 调用 callback 返回建议列表的数据
       cb(results)
     },
-    querySearchPhone(queryString, cb) {
+    querySearchHospital(queryString, cb) {
       let restaurants = []
-      for (let i in this.phoneList) {
-        restaurants.push({ 'value': this.phoneList[i].phone })
-      }
-      var results = queryString ? restaurants.filter(this.createFilter(queryString)) : restaurants
-      // 调用 callback 返回建议列表的数据
-      cb(results)
-    },
-    querySearchProduce(queryString, cb) {
-      let restaurants = []
-      for (let i in this.produceList) {
-        restaurants.push({ 'value': this.produceList[i].produce })
-      }
-      var results = queryString ? restaurants.filter(this.createFilter(queryString)) : restaurants
-      // 调用 callback 返回建议列表的数据
-      cb(results)
-    },
-    querySearchTracker(queryString, cb) {
-      let restaurants = []
-      for (let i in this.trackerList) {
-        restaurants.push({ 'value': this.trackerList[i].tracker })
-      }
-      var results = queryString ? restaurants.filter(this.createFilter(queryString)) : restaurants
-      // 调用 callback 返回建议列表的数据
-      cb(results)
-    },
-    querySearchBill(queryString, cb) {
-      let restaurants = []
-      for (let i in this.billList) {
-        restaurants.push({ 'value': this.billList[i].bill })
-      }
-      var results = queryString ? restaurants.filter(this.createFilter(queryString)) : restaurants
-      // 调用 callback 返回建议列表的数据
-      cb(results)
-    },
-    querySearchChannelBusiness(queryString, cb) {
-      let restaurants = []
-      for (let i in this.channelBusinessList) {
-        restaurants.push({ 'value': this.channelBusinessList[i].channel_business })
-      }
-      var results = queryString ? restaurants.filter(this.createFilter(queryString)) : restaurants
-      // 调用 callback 返回建议列表的数据
-      cb(results)
-    },
-    querySearchRecord(queryString, cb) {
-      let restaurants = []
-      for (let i in this.recordList) {
-        restaurants.push({ 'value': this.recordList[i].record})
+      for (let i in this.hospitalList) {
+        restaurants.push({ 'value': this.hospitalList[i].hospital })
       }
       var results = queryString ? restaurants.filter(this.createFilter(queryString)) : restaurants
       // 调用 callback 返回建议列表的数据
@@ -648,6 +531,81 @@ export default {
       var results = queryString ? restaurants.filter(this.createFilter(queryString)) : restaurants
       // 调用 callback 返回建议列表的数据
       cb(results)
+    },
+    querySearchCustomerName(queryString, cb) {
+      let restaurants = []
+      for (let i in this.customerNameList) {
+        restaurants.push({ 'value': this.customerNameList[i].customer_name})
+      }
+      var results = queryString ? restaurants.filter(this.createFilter(queryString)) : restaurants
+      // 调用 callback 返回建议列表的数据
+      cb(results)
+    },
+    getCityList() {
+      city().then(response => {
+        const { data } = response
+        this.loading = false
+        this.cityList = data
+      })
+    },
+    getCountyList() {
+      county().then(response => {
+        const { data } = response
+        this.loading = true
+        this.countyList = data
+      })
+    },
+    getHospitalList() {
+      hospital().then(response => {
+        const { data } = response
+        this.loading = false
+        this.hospitalList = data
+      })
+    },
+    getDepartmentList() {
+      department().then(response => {
+        const { data } = response
+        this.loading = false
+        this.departmentList = data
+      })
+    },
+    getCustomerNameList() {
+      customerName().then(response => {
+        const { data } = response
+        this.loading = false
+        this.customerNameList = data
+      })
+    },
+    cellEdit(row, column, cell, event) {
+      if (row[column.property]) {
+        row[column.property].edit = true
+        setTimeout(() => {
+          this.$refs[column.property].focus()
+        }, 20)
+      }
+    },
+    async changeData(row, column) {
+      let params = {
+        id: row.id.value,
+        column: column.property,
+        edit_value: row[column.property].value
+      }
+      await updateCustomer(params).then(response => {
+        this.$message({
+          message: response.message,
+          type: 'success'
+        })
+      }).catch(reason => {
+        const { data } = reason.response
+        if (data.code === 422) {
+          this.updateError = data.data
+        }
+      }).finally(() => {
+        row[column.property].edit = false
+      })
+    },
+    preText(pretext) {
+      return pretext.replace(/\r\n/g, '<br/>').replace(/\n/g, '<br/>').replace(/\s/g, '&nbsp;')
     }
   }
 }
@@ -665,5 +623,8 @@ export default {
     margin-right: 0;
     margin-bottom: 0;
     width: 50%;
+  }
+  .el-table .cell {
+  white-space: pre-line;
   }
 </style>

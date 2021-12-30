@@ -311,20 +311,17 @@ export default {
   },
   customer: {
     id: '客户ID',
-    city: '所在地市',
-    county: '所在区县',
-    hospital: '医院名称',
+    city: '地市',
+    county: '区县',
+    hospital: '医疗机构',
     department: '科室',
-    customer_name: '客户名称',
+    customer_name: '负责人',
     phone: '手机号',
-    produce: '主推产品',
-    basic_information: '临床基本情况',
-    tracker: '跟进人',
-    clinical_relationship: '临床关系',
-    bill: '提单情况',
+    information: '综合情况',
+    demand: '需求意向',
+    visit: '拜访记录',
     channel_business: '渠道商',
-    record: '下一步',
-    remark: '备注'
+    search: '市/区/院/科/人'
   },
   user: {
     name: '用户名',
