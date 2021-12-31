@@ -153,6 +153,19 @@ export const constantRoutes = [
         meta: { title: 'customer.customers', icon: 'el-icon-chat-dot-round', affix: true }
       }
     ]
+  },
+  {
+    path: '/channelBusiness',
+    component: Layout,
+    redirect: '/channel-business/index',
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/channel-business/index'),
+        name: 'channel-business',
+        meta: { title: 'channelBusiness.channelBusiness', icon: 'el-icon-chat-dot-round', affix: true }
+      }
+    ]
   }
 ]
 
