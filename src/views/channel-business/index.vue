@@ -13,7 +13,7 @@
             </el-button>
           </el-form-item>
           <el-form-item  prop="searchData">
-            <el-input v-model="formInline.searchData" :placeholder="$t('customer.search')" />
+            <el-input v-model="formInline.searchData" :placeholder="$t('channelBusiness.search')" />
           </el-form-item>
           <el-col>
             <el-form-item>
@@ -33,46 +33,12 @@
             @cell-dblclick="cellEdit"
           >
             <el-table-column
-              prop="city"
-              :label="$t('customer.city')"
-              style="width: 5%">
-              <template slot-scope="scope">
-                <el-input
-                  type="textarea"
-                  autosize
-                  v-if="scope.row.city.edit"
-                  ref="city"
-                  v-model="scope.row.city.value"
-                  style="width: 100%;height: 100%;border: none"
-                  @blur="changeData(scope.row, scope.column)">
-                </el-input>
-                <span v-else-if="scope.row.city.value==''"  class="set"><i class="el-icon-edit edit"></i></span>
-                <span v-else v-html="preText(scope.row.city.value)"></span>
-              </template>
-            </el-table-column>
-            <el-table-column
-              prop="county"
-              :label="$t('customer.county')"
-              style="width: 5%">
-              <template slot-scope="scope">
-                <el-input
-                  type="textarea"
-                  autosize
-                  v-if="scope.row.county.edit"
-                  ref="county"
-                  v-model="scope.row.county.value"
-                  style="width: 100%;height: 100%;border: none"
-                  @blur="changeData(scope.row, scope.column)">
-                </el-input>
-                <span v-else-if="scope.row.county.value==''"  class="set"><i class="el-icon-edit edit"></i></span>
-                <span v-else v-html="preText(scope.row.county.value)"></span>
-              </template>
-            </el-table-column>
-            <el-table-column
               prop="hospital"
-              :label="$t('customer.hospital')"
-              style="width: 8%">
+              :label="$t('channelBusiness.hospital')"
+              class="el-icon-search"
+              style="width: 5%">
               <template slot-scope="scope">
+                <el-button icon="el-icon-search" circle @click="handleDetail(scope.row.hospital.value)"></el-button>
                 <el-input
                   type="textarea"
                   autosize
@@ -87,45 +53,28 @@
               </template>
             </el-table-column>
             <el-table-column
-              prop="department"
-              :label="$t('customer.department')"
+              prop="channel_business"
+              :label="$t('channelBusiness.channelBusiness')"
               style="width: 5%">
               <template slot-scope="scope">
+                <el-button icon="el-icon-search" circle @click="handleDetail(scope.row.channel_business.value)"></el-button>
                 <el-input
                   type="textarea"
                   autosize
-                  v-if="scope.row.department.edit"
-                  ref="department"
-                  v-model="scope.row.department.value"
+                  v-if="scope.row.channel_business.edit"
+                  ref="channel_business"
+                  v-model="scope.row.channel_business.value"
                   style="width: 100%;height: 100%;border: none"
                   @blur="changeData(scope.row, scope.column)">
                 </el-input>
-                <span v-else-if="scope.row.department.value==''"  class="set"><i class="el-icon-edit edit"></i></span>
-                <span v-else v-html="preText(scope.row.department.value)"></span>
-              </template>
-            </el-table-column>
-            <el-table-column
-              prop="customer_name"
-              :label="$t('customer.customer_name')"
-              min-width="60px">
-              <template slot-scope="scope">
-                <el-input
-                  type="textarea"
-                  autosize
-                  v-if="scope.row.customer_name.edit"
-                  ref="customer_name"
-                  v-model="scope.row.customer_name.value"
-                  style="width: 100%;height: 100%;border: none"
-                  @blur="changeData(scope.row, scope.column)">
-                </el-input>
-                <span v-else-if="scope.row.customer_name.value==''"  class="set"><i class="el-icon-edit edit"></i></span>
-                <span v-else v-html="preText(scope.row.customer_name.value)"></span>
+                <span v-else-if="scope.row.channel_business.value==''"  class="set"><i class="el-icon-edit edit"></i></span>
+                <span v-else v-html="preText(scope.row.channel_business.value)"></span>
               </template>
             </el-table-column>
             <el-table-column
               prop="phone"
-              :label="$t('customer.phone')"
-              style="width: 10%">
+              :label="$t('channelBusiness.phone')"
+              style="width: 8%">
               <template slot-scope="scope">
                 <el-input
                   type="textarea"
@@ -141,75 +90,75 @@
               </template>
             </el-table-column>
             <el-table-column
-              prop="information"
-              :label="$t('customer.information')"
+              prop="company"
+              :label="$t('channelBusiness.company')"
+              style="width: 5%">
+              <template slot-scope="scope">
+                <el-input
+                  type="textarea"
+                  autosize
+                  v-if="scope.row.company.edit"
+                  ref="company"
+                  v-model="scope.row.company.value"
+                  style="width: 100%;height: 100%;border: none"
+                  @blur="changeData(scope.row, scope.column)">
+                </el-input>
+                <span v-else-if="scope.row.company.value==''"  class="set"><i class="el-icon-edit edit"></i></span>
+                <span v-else v-html="preText(scope.row.company.value)"></span>
+              </template>
+            </el-table-column>
+            <el-table-column
+              prop="produce"
+              :label="$t('channelBusiness.produce')"
+              min-width="60px">
+              <template slot-scope="scope">
+                <el-input
+                  type="textarea"
+                  autosize
+                  v-if="scope.row.produce.edit"
+                  ref="produce"
+                  v-model="scope.row.produce.value"
+                  style="width: 100%;height: 100%;border: none"
+                  @blur="changeData(scope.row, scope.column)">
+                </el-input>
+                <span v-else-if="scope.row.produce.value==''"  class="set"><i class="el-icon-edit edit"></i></span>
+                <span v-else v-html="preText(scope.row.produce.value)"></span>
+              </template>
+            </el-table-column>
+            <el-table-column
+              prop="money"
+              :label="$t('channelBusiness.money')"
+              style="width: 10%">
+              <template slot-scope="scope">
+                <el-input
+                  type="textarea"
+                  autosize
+                  v-if="scope.row.money.edit"
+                  ref="money"
+                  v-model="scope.row.money.value"
+                  style="width: 100%;height: 100%;border: none"
+                  @blur="changeData(scope.row, scope.column)">
+                </el-input>
+                <span v-else-if="scope.row.money.value==''"  class="set"><i class="el-icon-edit edit"></i></span>
+                <span v-else v-html="preText(scope.row.money.value)"></span>
+              </template>
+            </el-table-column>
+            <el-table-column
+              prop="business_time"
+              :label="$t('channelBusiness.businessTime')"
               min-width="150px">
               <template slot-scope="scope">
                 <el-input
                   type="textarea"
                   autosize
-                  v-if="scope.row.information.edit"
-                  ref="information"
-                  v-model="scope.row.information.value"
+                  v-if="scope.row.business_time.edit"
+                  ref="business_time"
+                  v-model="scope.row.business_time.value"
                   style="width: 100%;height: 100%;border: none"
                   @blur="changeData(scope.row, scope.column)">
                 </el-input>
-                <span v-else-if="scope.row.information.value==''"  class="set"><i class="el-icon-edit edit"></i></span>
-                <span v-else v-html="preText(scope.row.information.value)"></span>
-              </template>
-            </el-table-column>
-            <el-table-column
-              prop="demand"
-              :label="$t('customer.demand')"
-              min-width="150px">
-              <template slot-scope="scope">
-                <el-input
-                  type="textarea"
-                  autosize
-                  v-if="scope.row.demand.edit"
-                  ref="demand"
-                  v-model="scope.row.demand.value"
-                  style="width: 100%;height: 100%;border: none"
-                  @blur="changeData(scope.row, scope.column)">
-                </el-input>
-                <span v-else-if="scope.row.demand.value==''"  class="set"><i class="el-icon-edit edit"></i></span>
-                <span v-else v-html="preText(scope.row.demand.value)"></span>
-              </template>
-            </el-table-column>
-            <el-table-column
-              min-width="200px"
-              prop="visit"
-              :label="$t('customer.visit')">
-              <template slot-scope="scope">
-                <el-input
-                  type="textarea"
-                  autosize
-                  v-if="scope.row.visit.edit"
-                  ref="visit"
-                  v-model="scope.row.visit.value"
-                  style="width: 100%;height: 100%;border: none"
-                  @blur="changeData(scope.row, scope.column)">
-                </el-input>
-                <span v-else-if="scope.row.visit.value==''"  class="set"><i class="el-icon-edit edit"></i></span>
-                <span v-else v-html="preText(scope.row.visit.value)"></span>
-              </template>
-            </el-table-column>
-            <el-table-column
-              style="width: 10%"
-              prop="channel_business"
-              :label="$t('customer.channel_business')">
-              <template slot-scope="scope">
-                <el-input
-                  type="textarea"
-                  autosize
-                  v-if="scope.row.channel_business.edit"
-                  ref="channel_business"
-                  v-model="scope.row.channel_business.value"
-                  style="width: 100%;height: 100%;border: none"
-                  @blur="changeData(scope.row, scope.column)">
-                </el-input>
-                <span v-else-if="scope.row.channel_business.value==''"  class="set"><i class="el-icon-edit edit"></i></span>
-                <span v-else v-html="preText(scope.row.channel_business.value)"></span>
+                <span v-else-if="scope.row.business_time.value==''"  class="set"><i class="el-icon-edit edit"></i></span>
+                <span v-else v-html="preText(scope.row.business_time.value)"></span>
               </template>
             </el-table-column>
             <el-table-column :label="$t('common.handle')" width="100px">
@@ -250,23 +199,7 @@
       :visible.sync="createVisible"
     >
       <el-form ref="createForm" :model="createForm" label-width="auto" @submit.native.prevent>
-        <el-form-item :label="$t('customer.city')" prop="city" >
-          <el-autocomplete
-              class="inline-input"
-              v-model="createForm.city"
-              :fetch-suggestions="querySearchCity"
-              placeholder="请输入地市">
-          </el-autocomplete>
-        </el-form-item>
-        <el-form-item :label="$t('customer.county')" prop="county">
-          <el-autocomplete
-            class="inline-input"
-            v-model="createForm.county"
-            :fetch-suggestions="querySearchCounty"
-            placeholder="请输入区县">
-          </el-autocomplete>
-        </el-form-item>
-        <el-form-item :label="$t('customer.hospital')" prop="hospital">
+        <el-form-item :label="$t('channelBusiness.hospital')" prop="hospital">
           <el-autocomplete
             class="inline-input"
             v-model="createForm.hospital"
@@ -274,39 +207,41 @@
             placeholder="请输入医疗机构">
           </el-autocomplete>
         </el-form-item>
-        <el-form-item :label="$t('customer.department')" prop="department">
+        <el-form-item :label="$t('channelBusiness.channelBusiness')" prop="channel_business">
           <el-autocomplete
             class="inline-input"
-            v-model="createForm.department"
-            :fetch-suggestions="querySearchDepartment"
-            placeholder="请输入科室">
+            v-model="createForm.channel_business"
+            :fetch-suggestions="querySearchChannelBusiness"
+            placeholder="请输入渠道商">
           </el-autocomplete>
         </el-form-item>
-        <el-form-item :label="$t('customer.customer_name')" prop="customer_name">
-          <el-autocomplete
-            class="inline-input"
-            v-model="createForm.customer_name"
-            :fetch-suggestions="querySearchCustomerName"
-            placeholder="请输入客户名称">
-          </el-autocomplete>
-        </el-form-item>
-        <el-form-item :label="$t('customer.phone')" prop="phone">
+        <el-form-item :label="$t('channelBusiness.phone')" prop="phone">
           <el-input v-model="createForm.phone" placeholder="请输入手机号"/>
         </el-form-item>
-        <el-form-item :label="$t('customer.information')" prop="综合情况">
-          <el-input v-model="createForm.information" />
+        <el-form-item :label="$t('channelBusiness.company')" prop="company" >
+          <el-autocomplete
+              class="inline-input"
+              v-model="createForm.company"
+              :fetch-suggestions="querySearchCompany"
+              placeholder="请输入公司">
+          </el-autocomplete>
         </el-form-item>
-        <el-form-item :label="$t('customer.demand')" prop="demand" placeholder="请输入需求意向">
-          <el-input v-model="createForm.demand" />
+        <el-form-item :label="$t('channelBusiness.produce')" prop="produce">
+          <el-autocomplete
+            class="inline-input"
+            v-model="createForm.produce"
+            :fetch-suggestions="querySearchProduce"
+            placeholder="请输入产品">
+          </el-autocomplete>
         </el-form-item>
-        <el-form-item :label="$t('customer.visit')" prop="visit">
-          <el-input v-model="createForm.visit" placeholder="请输入拜访记录"/>
+        <el-form-item :label="$t('channelBusiness.money')" prop="money">
+          <el-input v-model="createForm.money" placeholder="请输入成交金额"/>
         </el-form-item>
-        <el-form-item :label="$t('customer.channel_business')" prop="channel_business">
-          <el-input v-model="createForm.channel_business" placeholder="请输入渠道商"/>
+        <el-form-item :label="$t('channelBusiness.businessTime')" prop="business_time">
+          <el-input v-model="createForm.business_time" placeholder="请输入成交时间"/>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" :loading="createLoading" @click="onCreateCustomer('createForm')">{{ $t('common.submit') }}</el-button>
+          <el-button type="primary" :loading="createLoading" @click="onCreateChannelBusiness('createForm')">{{ $t('common.submit') }}</el-button>
           <el-button @click="resetCreateForm('createForm')">{{ $t('common.reset') }}</el-button>
         </el-form-item>
       </el-form>
@@ -315,35 +250,20 @@
 </template>
 
 <script>
-import { customers, createCustomer, deletedCustomer, updateCustomer, city, county, hospital, department, customerName } from '@/api/customer'
-
+import { channelBusiness, companyList, produceList, createChannelBusiness, updateChannelBusiness, deleteChannelBusiness } from '@/api/channel-business'
+import { hospital, channelBusinessList } from '@/api/customer'
 export default {
-  name: 'customer.customers',
+  name: 'channelBusiness.channelBusiness',
   data() {
     return {
       createForm: {
-        city: '',
-        county: '',
         hospital: '',
-        department: '',
-        customer_name: '',
+        channel_business: '',
         phone: '',
-        information: '',
-        demand: '',
-        visit: '',
-        channel_business: ''
-      },
-      updateForm: {
-        city: '',
-        county: '',
-        hospital: '',
-        department: '',
-        customer_name: '',
-        phone: '',
-        information: '',
-        demand: '',
-        visit: '',
-        channel_business: ''
+        company: '',
+        produce: '',
+        money: '',
+        business_time: ''
       },
       formInline: {
         searchData: ''
@@ -354,41 +274,14 @@ export default {
       sort: 'updated_at',
       offset: 0,
       limit: 10,
-      customerNameList: [],
-      cityList: [],
-      countyList: [],
+      channelBusiness: [],
+      companyList: [],
+      produceList: [],
+      channelBusinessList: [],
       hospitalList: [],
-      departmentList: [],
       tableData: [],
       spanArray: [],
       tableIndex: 0,
-      pickerOptions: {
-        shortcuts: [{
-          text: this.$t('common.week'),
-          onClick(picker) {
-            const end = new Date()
-            const start = new Date()
-            start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
-            picker.$emit('pick', [start, end])
-          }
-        }, {
-          text: this.$t('common.oneMonth'),
-          onClick(picker) {
-            const end = new Date()
-            const start = new Date()
-            start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
-            picker.$emit('pick', [start, end])
-          }
-        }, {
-          text: this.$t('common.threeMonth'),
-          onClick(picker) {
-            const end = new Date()
-            const start = new Date()
-            start.setTime(start.getTime() - 3600 * 1000 * 24 * 90)
-            picker.$emit('pick', [start, end])
-          }
-        }]
-      },
       createError: {},
       createLoading: false,
       createVisible: false,
@@ -398,21 +291,22 @@ export default {
     }
   },
   mounted() {
-    this.getCityList()
-    this.getCountyList()
+    this.getCompanyList()
+    this.getProduceList()
+    this.getChannelBusinessList()
     this.getHospitalList()
-    this.getDepartmentList()
-
-    this.getCustomerNameList()
   },
   created() {
-    this.getCustomers()
+    this.getChannelBusiness()
   },
   methods: {
-    onCreateCustomer(formName) {
+    handleDetail(row) {
+      this.$router.push({ path: '/customer/index', query: { searchData: row }})
+    },
+    onCreateChannelBusiness(formName) {
       this.createError = {}
       this.createLoading = true
-      createCustomer(this.createForm).then(response => {
+      createChannelBusiness(this.createForm).then(response => {
         this.$message({
           message: response.message,
           type: 'success'
@@ -420,7 +314,7 @@ export default {
         this.resetCreateForm(formName)
         this.createVisible = false
         this.offset = 0
-        this.getCustomers()
+        this.getChannelBusiness()
       }).catch(reason => {
         const { data } = reason.response
         if (data.code === 422) {
@@ -431,12 +325,12 @@ export default {
       })
     },
     handleDelete(id) {
-      deletedCustomer(id).then(response => {
+      deleteChannelBusiness(id).then(response => {
         this.$message({
           message: response.message,
           type: 'success'
         })
-        this.getCustomers()
+        this.getChannelBusiness()
       })
     },
     resetCreateForm(formName) {
@@ -444,17 +338,24 @@ export default {
     },
     onSubmit() {
       this.offset = 0
-      this.getCustomers()
+      this.getChannelBusiness()
     },
     resetForm(formName) {
       this.$refs[formName].resetFields()
       this.offset = 0
-      this.getCustomers()
+      this.formInline.searchData = null
+      this.$route.query.searchData = null
+      this.getChannelBusiness()
     },
-    getCustomers() {
+    getChannelBusiness() {
       this.spanArray = []
       this.tableIndex = 0
+      this.tableData = []
       this.loading = true
+      if (this.$route.query.searchData) {
+        this.formInline.searchData = this.$route.query.searchData
+        this.$route.query.searchData = null
+      }
       const requestData = {
         offset: this.offset,
         limit: this.limit,
@@ -462,11 +363,10 @@ export default {
         sort: this.sort,
         search_data: this.formInline.searchData
       }
-      customers(requestData).then(response => {
+      channelBusiness(requestData).then(response => {
         const { data } = response
         this.loading = false
-        this.tableData = data.customers
-
+        this.tableData = data.channel_business
         this.tableData.forEach((item, index) => {
           item.index = index + 1
           for(let i in item) {
@@ -485,36 +385,47 @@ export default {
     },
     handleSizeChange(val) {
       this.limit = val
-      this.getCustomers()
+      this.getChannelBusiness()
     },
     handleCurrentChange(val) {
       this.offset = val
-      this.getCustomers()
+      this.getChannelBusiness()
     },
     createFilter(queryString) {
       return (restaurant) => {
         return (restaurant.value.toString().indexOf(queryString.toString()) > -1)
       }
     },
-    querySearchCity(queryString, cb) {
+    querySearchCompany(queryString, cb) {
       let restaurants = []
-      for (let i in this.cityList) {
-        restaurants.push({ 'value': this.cityList[i].city})
+      for (let i in this.companyList) {
+        restaurants.push({ 'value': this.companyList[i].company})
       }
       var results = queryString ? restaurants.filter(this.createFilter(queryString)) : restaurants
       // 调用 callback 返回建议列表的数据
       cb(results)
     },
-    querySearchCounty(queryString, cb) {
+    querySearchProduce(queryString, cb) {
       let restaurants = []
-      for (let i in this.countyList) {
-        restaurants.push({ 'value': this.countyList[i].county})
+      for (let i in this.produceList) {
+        restaurants.push({ 'value': this.produceList[i].produce })
+      }
+      console.log(this.produceList)
+      var results = queryString ? restaurants.filter(this.createFilter(queryString)) : restaurants
+      // 调用 callback 返回建议列表的数据
+      cb(results)
+    },
+    querySearchChannelBusiness(queryString, cb) {
+      let restaurants = []
+      for (let i in this.channelBusinessList) {
+        restaurants.push({ 'value': this.channelBusinessList[i].channel_business})
       }
       var results = queryString ? restaurants.filter(this.createFilter(queryString)) : restaurants
       // 调用 callback 返回建议列表的数据
       cb(results)
     },
     querySearchHospital(queryString, cb) {
+      console.log(this.hospitalList)
       let restaurants = []
       for (let i in this.hospitalList) {
         restaurants.push({ 'value': this.hospitalList[i].hospital })
@@ -523,36 +434,25 @@ export default {
       // 调用 callback 返回建议列表的数据
       cb(results)
     },
-    querySearchDepartment(queryString, cb) {
-      let restaurants = []
-      for (let i in this.departmentList) {
-        restaurants.push({ 'value': this.departmentList[i].department })
-      }
-      var results = queryString ? restaurants.filter(this.createFilter(queryString)) : restaurants
-      // 调用 callback 返回建议列表的数据
-      cb(results)
-    },
-    querySearchCustomerName(queryString, cb) {
-      let restaurants = []
-      for (let i in this.customerNameList) {
-        restaurants.push({ 'value': this.customerNameList[i].customer_name})
-      }
-      var results = queryString ? restaurants.filter(this.createFilter(queryString)) : restaurants
-      // 调用 callback 返回建议列表的数据
-      cb(results)
-    },
-    getCityList() {
-      city().then(response => {
+    getCompanyList() {
+      companyList().then(response => {
         const { data } = response
         this.loading = false
-        this.cityList = data
+        this.companyList = data
       })
     },
-    getCountyList() {
-      county().then(response => {
+    getProduceList() {
+      produceList().then(response => {
         const { data } = response
-        this.loading = true
-        this.countyList = data
+        this.loading = false
+        this.produceList = data
+      })
+    },
+    getChannelBusinessList() {
+      channelBusinessList().then(response => {
+        const { data } = response
+        this.loading = false
+        this.channelBusinessList = data
       })
     },
     getHospitalList() {
@@ -560,20 +460,6 @@ export default {
         const { data } = response
         this.loading = false
         this.hospitalList = data
-      })
-    },
-    getDepartmentList() {
-      department().then(response => {
-        const { data } = response
-        this.loading = false
-        this.departmentList = data
-      })
-    },
-    getCustomerNameList() {
-      customerName().then(response => {
-        const { data } = response
-        this.loading = false
-        this.customerNameList = data
       })
     },
     cellEdit(row, column, cell, event) {
@@ -590,7 +476,7 @@ export default {
         column: column.property,
         edit_value: row[column.property].value
       }
-      await updateCustomer(params).then(response => {
+      await updateChannelBusiness(params).then(response => {
         this.$message({
           message: response.message,
           type: 'success'
@@ -605,6 +491,12 @@ export default {
       })
     },
     preText(pretext) {
+      if (pretext === null || pretext === '') {
+        return ''
+      }
+      if (typeof(pretext) !== 'string') {
+        pretext = pretext.toString()
+      }
       return pretext.replace(/\r\n/g, '<br/>').replace(/\n/g, '<br/>').replace(/\s/g, '&nbsp;')
     }
   }
@@ -626,5 +518,8 @@ export default {
   }
   .el-table .cell {
   white-space: pre-line;
+  }
+  .el-autocomplete{
+    width: 100%;
   }
 </style>

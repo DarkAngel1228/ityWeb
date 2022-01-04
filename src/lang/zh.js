@@ -327,18 +327,15 @@ export default {
     search: '市/区/院/科/人'
   },
   channelBusiness: {
-    id: '客户ID',
-    city: '地市',
-    county: '区县',
+    id: '渠道商ID',
+    channelBusiness: '渠道商',
+    company: '公司',
     hospital: '医疗机构',
-    department: '科室',
-    customer_name: '负责人',
+    produce: '产品',
     phone: '手机号',
-    information: '综合情况',
-    demand: '需求意向',
-    visit: '拜访记录',
-    channel_business: '渠道商',
-    search: '市/区/院/科/人'
+    businessTime: '成交时间',
+    money: '成交金额',
+    search: '医院/渠道'
   },
   user: {
     name: '用户名',

@@ -73,6 +73,7 @@
               :label="$t('customer.hospital')"
               style="width: 8%">
               <template slot-scope="scope">
+                <el-button icon="el-icon-search" circle @click="handleDetail(scope.row.hospital.value)"></el-button>
                 <el-input
                   type="textarea"
                   autosize
@@ -199,6 +200,7 @@
               prop="channel_business"
               :label="$t('customer.channel_business')">
               <template slot-scope="scope">
+                <el-button icon="el-icon-search" circle @click="handleDetail(scope.row.channel_business.value)"></el-button>
                 <el-input
                   type="textarea"
                   autosize
@@ -294,16 +296,21 @@
           <el-input v-model="createForm.phone" placeholder="请输入手机号"/>
         </el-form-item>
         <el-form-item :label="$t('customer.information')" prop="综合情况">
-          <el-input v-model="createForm.information" />
+          <el-input v-model="createForm.information"  placeholder="请输入综合情况"/>
         </el-form-item>
-        <el-form-item :label="$t('customer.demand')" prop="demand" placeholder="请输入需求意向">
-          <el-input v-model="createForm.demand" />
+        <el-form-item :label="$t('customer.demand')" prop="demand">
+          <el-input v-model="createForm.demand" placeholder="请输入需求意向" />
         </el-form-item>
         <el-form-item :label="$t('customer.visit')" prop="visit">
           <el-input v-model="createForm.visit" placeholder="请输入拜访记录"/>
         </el-form-item>
         <el-form-item :label="$t('customer.channel_business')" prop="channel_business">
-          <el-input v-model="createForm.channel_business" placeholder="请输入渠道商"/>
+          <el-autocomplete
+            class="inline-input"
+            v-model="createForm.channel_business"
+            :fetch-suggestions="querySearchChannelBusiness"
+            placeholder="请输入渠道商">
+          </el-autocomplete>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" :loading="createLoading" @click="onCreateCustomer('createForm')">{{ $t('common.submit') }}</el-button>
@@ -315,7 +322,7 @@
 </template>
 
 <script>
-import { customers, createCustomer, deletedCustomer, updateCustomer, city, county, hospital, department, customerName } from '@/api/customer'
+import { customers, createCustomer, deletedCustomer, updateCustomer, city, county, hospital, department, customerName, channelBusinessList } from '@/api/customer'
 
 export default {
   name: 'customer.customers',
@@ -359,6 +366,7 @@ export default {
       countyList: [],
       hospitalList: [],
       departmentList: [],
+      channelBusinessList: [],
       tableData: [],
       spanArray: [],
       tableIndex: 0,
@@ -402,13 +410,16 @@ export default {
     this.getCountyList()
     this.getHospitalList()
     this.getDepartmentList()
-
+    this.getChannelBusinessList()
     this.getCustomerNameList()
   },
   created() {
     this.getCustomers()
   },
   methods: {
+    handleDetail(row) {
+      this.$router.push({ path: '/channelBusiness/index', query: { searchData: row }})
+    },
     onCreateCustomer(formName) {
       this.createError = {}
       this.createLoading = true
@@ -449,12 +460,18 @@ export default {
     resetForm(formName) {
       this.$refs[formName].resetFields()
       this.offset = 0
+      this.formInline.searchData = null
+      this.$route.query.searchData = null
       this.getCustomers()
     },
     getCustomers() {
       this.spanArray = []
       this.tableIndex = 0
       this.loading = true
+      if (this.$route.query.searchData) {
+        this.formInline.searchData = this.$route.query.searchData
+        this.$route.query.searchData = null
+      }
       const requestData = {
         offset: this.offset,
         limit: this.limit,
@@ -532,6 +549,15 @@ export default {
       // 调用 callback 返回建议列表的数据
       cb(results)
     },
+    querySearchChannelBusiness(queryString, cb) {
+      let restaurants = []
+      for (let i in this.channelBusinessList) {
+        restaurants.push({ 'value': this.channelBusinessList[i].channel_business })
+      }
+      var results = queryString ? restaurants.filter(this.createFilter(queryString)) : restaurants
+      // 调用 callback 返回建议列表的数据
+      cb(results)
+    },
     querySearchCustomerName(queryString, cb) {
       let restaurants = []
       for (let i in this.customerNameList) {
@@ -551,7 +577,7 @@ export default {
     getCountyList() {
       county().then(response => {
         const { data } = response
-        this.loading = true
+        this.loading = false
         this.countyList = data
       })
     },
@@ -574,6 +600,13 @@ export default {
         const { data } = response
         this.loading = false
         this.customerNameList = data
+      })
+    },
+    getChannelBusinessList() {
+      channelBusinessList().then(response => {
+        const { data } = response
+        this.loading = false
+        this.channelBusinessList = data
       })
     },
     cellEdit(row, column, cell, event) {
@@ -626,5 +659,8 @@ export default {
   }
   .el-table .cell {
   white-space: pre-line;
+  }
+  .el-autocomplete{
+    width: 100%;
   }
 </style>

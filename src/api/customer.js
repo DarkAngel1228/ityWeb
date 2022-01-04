@@ -44,9 +44,9 @@ export function createCustomer(data) {
   })
 }
 
-export function getCustomerById(id) {
+export function channelBusinessList() {
   return request({
-    url: '/customer/' + id,
+    url: '/channel_business_list',
     method: 'post'
   })
 }

@@ -20,6 +20,9 @@ if (process.env.npm_config_preview || rawArgv.includes('--preview')) {
     publicPath,
     serveStatic('./dist', {
       index: ['index.html', '/']
+    }),
+    cors({
+      maxAge: 86400, //Access-Control-Max-Age 字段指定了预检请求的结果能够被缓存多久，单位秒
     })
   )
 

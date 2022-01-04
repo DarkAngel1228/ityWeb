@@ -1,74 +1,46 @@
 import request from '@/utils/request'
 
-export function customers(data) {
+export function channelBusiness(data) {
   return request({
-    url: '/customers',
+    url: '/channel_business',
     method: 'post',
     data
   })
 }
 
-export function city() {
+export function companyList() {
   return request({
-    url: '/city',
+    url: '/company_list',
     method: 'post'
   })
 }
 
-export function county() {
+export function produceList() {
   return request({
-    url: '/county',
+    url: '/produce_list',
     method: 'post'
   })
 }
 
-export function hospital() {
+export function createChannelBusiness(data) {
   return request({
-    url: '/hospitals',
-    method: 'post'
-  })
-}
-
-export function department() {
-  return request({
-    url: '/department',
-    method: 'post'
-  })
-}
-
-export function createCustomer(data) {
-  return request({
-    url: '/create_customer',
+    url: '/create_channel_business',
     method: 'post',
     data
   })
 }
 
-export function getCustomerById(id) {
+export function updateChannelBusiness(data) {
   return request({
-    url: '/customer/' + id,
-    method: 'post'
-  })
-}
-
-export function updateCustomer(data) {
-  return request({
-    url: '/update_customer',
+    url: '/update_channel_business',
     method: 'post',
     data
   })
 }
 
-export function customerName() {
+export function deleteChannelBusiness(id) {
   return request({
-    url: '/customer_names',
-    method: 'post'
-  })
-}
-
-export function deletedCustomer(id) {
-  return request({
-    url: '/delete_customer/' + id,
+    url: '/delete_channel_business/' + id,
     method: 'post'
   })
 }
